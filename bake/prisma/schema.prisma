@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
+  password   String
+  role       String   @default("user")
+  createdAt  DateTime @default(now())
+  profile    Profile?
+  devices    Device[]
+
+  @@map("users")
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  fullName  String?
+  phone     String?
+  avatarUrl String?
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+model Device {
+  id            Int             @id @default(autoincrement())
+  deviceUuid    String          @unique
+  name          String?
+  userId        Int?
+  createdAt     DateTime        @default(now())
+  user          User?           @relation(fields: [userId], references: [id])
+  sensors       Sensor[]
+  apiKeys       ApiKey[]
+  alerts        Alert[]
+  alertSettings AlertSettings?
+
+  @@map("devices")
+}
+
+model Sensor {
+  id        Int      @id @default(autoincrement())
+  deviceId  Int
+  type      String
+  unit      String?
+  createdAt DateTime @default(now())
+  device    Device   @relation(fields: [deviceId], references: [id])
+  readings  Reading[]
+  alerts    Alert[]
+
+  @@map("sensors")
+}
+
+model Reading {
+  id         Int      @id @default(autoincrement())
+  sensorId   Int
+  value      Float
+  recordedAt DateTime @default(now())
+  sensor     Sensor   @relation(fields: [sensorId], references: [id])
+
+  @@map("readings")
+}
+
+model Alert {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  deviceId  Int
+  sensorId  Int
+  level     String
+  message   String
+  isRead    Boolean  @default(false)
+  emailSent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  device    Device   @relation(fields: [deviceId], references: [id])
+  sensor    Sensor   @relation(fields: [sensorId], references: [id])
+
+  @@map("alerts")
+}
+
+model AlertSettings {
+  id                  Int      @id @default(autoincrement())
+  deviceId            Int      @unique
+  minTemperature      Float?
+  maxTemperature      Float?
+  minHumidity         Float?
+  maxHumidity         Float?
+  minOxygen           Float?
+  maxOxygen           Float?
+  emailNotifications  Boolean  @default(false)
+  notificationEmail   String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  device              Device   @relation(fields: [deviceId], references: [id])
+
+  @@map("alert_settings")
+}
+
+model ApiKey {
+  id        String   @id @default(dbgenerated("gen_random_uuid()"))
+  deviceId  Int
+  apiKey    String   @unique
+  createdAt DateTime @default(now())
+  device    Device   @relation(fields: [deviceId], references: [id])
+
+  @@map("api_keys")
+}
