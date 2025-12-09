@@ -48,6 +48,34 @@ const translations = {
     
     // Language
     switchToEnglish: 'English',
+    
+    // Weather
+    weatherTitle: 'حالة الطقس',
+    weatherError: 'فشل في تحميل بيانات الطقس',
+    feelsLike: 'يشعر وكأنه',
+    forecast: 'توقعات الطقس',
+    today: 'اليوم',
+    sunrise: 'شروق الشمس',
+    sunset: 'غروب الشمس',
+    
+    // Registration
+    registerTitle: 'إنشاء حساب جديد',
+    registerSubtitle: 'سجل للوصول إلى لوحة التحكم',
+    name: 'الاسم',
+    namePlaceholder: 'أدخل اسمك',
+    email: 'البريد الإلكتروني',
+    emailPlaceholder: 'example@email.com',
+    confirmPassword: 'تأكيد كلمة المرور',
+    confirmPasswordPlaceholder: 'أعد إدخال كلمة المرور',
+    register: 'تسجيل',
+    registering: 'جاري التسجيل...',
+    registerSuccess: 'تم إنشاء الحساب بنجاح. يمكنك الآن تسجيل الدخول.',
+    registerError: 'فشل في التسجيل. يرجى المحاولة مرة أخرى.',
+    fillAllFields: 'يرجى ملء جميع الحقول',
+    passwordMismatch: 'كلمات المرور غير متطابقة',
+    alreadyHaveAccount: 'لديك حساب بالفعل؟',
+    noAccount: 'ليس لديك حساب؟',
+    createAccount: 'إنشاء حساب',
   },
   en: {
     // Login Page
@@ -93,6 +121,34 @@ const translations = {
     
     // Language
     switchToEnglish: 'العربية',
+    
+    // Weather
+    weatherTitle: 'Weather',
+    weatherError: 'Failed to load weather data',
+    feelsLike: 'Feels like',
+    forecast: 'Forecast',
+    today: 'Today',
+    sunrise: 'Sunrise',
+    sunset: 'Sunset',
+    
+    // Registration
+    registerTitle: 'Create Account',
+    registerSubtitle: 'Register to access your dashboard',
+    name: 'Name',
+    namePlaceholder: 'Enter your name',
+    email: 'Email',
+    emailPlaceholder: 'example@email.com',
+    confirmPassword: 'Confirm Password',
+    confirmPasswordPlaceholder: 'Re-enter your password',
+    register: 'Register',
+    registering: 'Registering...',
+    registerSuccess: 'Account created successfully. You can now log in.',
+    registerError: 'Registration failed. Please try again.',
+    fillAllFields: 'Please fill in all fields',
+    passwordMismatch: 'Passwords do not match',
+    alreadyHaveAccount: 'Already have an account?',
+    noAccount: "Don't have an account?",
+    createAccount: 'Create Account',
   },
 };
 

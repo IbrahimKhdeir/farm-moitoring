@@ -5,7 +5,9 @@
 #include <PubSubClient.h>
 #include <Update.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <WiFiManager.h>
+
 
 // ---------------- CONFIG ----------------
 const char *firmwareUrl = "https://github.com/amer-maher/esp32_firmware/"
@@ -33,14 +35,14 @@ DHT dht(DHTPIN, DHTTYPE);
 // ---------------- MQ135 ----------------
 const int mq135Pin = 34; // A0
 
-// ---------------- MQTT ----------------
-WiFiClient espClient;
+// ---------------- MQTT (HiveMQ Cloud) ----------------
+WiFiClientSecure espClient;
 PubSubClient mqttClient(espClient);
 
-const char *mqtt_server = "192.168.1.14"; // IP الـ MQTT Broker
-const int mqtt_port = 1883;
-const char *mqtt_username = "";
-const char *mqtt_password = "";
+const char *mqtt_server = "9ffbb9ad524241c98a8bc879ac0598ec.s1.eu.hivemq.cloud";
+const int mqtt_port = 8883;
+const char *mqtt_username = "farm-user";
+const char *mqtt_password = "Farm@123";
 
 unsigned long lastMQTTConnectAttempt = 0;
 
@@ -86,9 +88,11 @@ void setup() {
   Serial.println("WiFi Connected! IP: " + WiFi.localIP().toString());
   delay(1000);
 
-  // ---- MQTT setup ----
+  // ---- MQTT setup (HiveMQ Cloud with TLS) ----
+  espClient.setInsecure(); // Skip certificate verification for simplicity
   mqttClient.setServer(mqtt_server, mqtt_port);
   mqttClient.setCallback(mqttCallback);
+  mqttClient.setBufferSize(512); // Increase buffer for larger messages
 
   // ---- WDT init ----
   esp_task_wdt_init(WDT_TIMEOUT_SEC, true);
