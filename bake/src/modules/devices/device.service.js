@@ -5,9 +5,14 @@ async function addDeviceService({ deviceUuid, name, userId }) {
 }
 
 async function getDevicesService(userId) {
-  const where = userId ? { userId } : {};
+  // Only return devices that belong to this user
+  // Don't show devices with null userId (global/unassigned devices)
+  if (!userId) {
+    return [];
+  }
+  
   return prisma.device.findMany({
-    where,
+    where: { userId },
     include: { sensors: true }
   });
 }
