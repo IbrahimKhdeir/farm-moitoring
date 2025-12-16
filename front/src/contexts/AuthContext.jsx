@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { authenticateSocket } from '../api/socket';
 
 const AuthContext = createContext(null);
 
@@ -18,6 +19,9 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
+
+    // Authenticate socket with token
+    authenticateSocket();
 
     // Optimistic update
     if (savedUser) {
@@ -129,6 +133,10 @@ export function AuthProvider({ children }) {
       }
 
       setIsAuthenticated(true);
+      
+      // Authenticate socket after successful login
+      authenticateSocket();
+      
       return true;
     } catch (error) {
       console.error("Login error:", error);
