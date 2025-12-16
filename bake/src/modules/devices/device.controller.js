@@ -16,7 +16,9 @@ async function addDevice(req, res) {
 async function getDevices(req, res) {
   try {
     const userId = req.userId || req.user?.id;
+    console.log('getDevices called - userId:', userId);
     const devices = await getDevicesService(userId);
+    console.log(`getDevices returning ${Array.isArray(devices) ? devices.length : 0} devices for user ${userId}`);
     success(res, devices);
   } catch (err) {
     error(res, err.message);
