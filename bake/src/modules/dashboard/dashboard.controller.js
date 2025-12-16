@@ -3,8 +3,21 @@ const { success, error } = require('../../core/utils/response');
 
 async function getStats(req, res) {
     try {
-        const devicesCount = await prisma.device.count();
-        const sensorsCount = await prisma.sensor.count();
+        const userId = req.userId || req.user?.id;
+
+        // Count only devices belonging to this user
+        const devicesCount = await prisma.device.count({
+            where: { userId: userId }
+        });
+
+        // Count only sensors from devices belonging to this user
+        const sensorsCount = await prisma.sensor.count({
+            where: {
+                device: {
+                    userId: userId
+                }
+            }
+        });
 
         success(res, {
             devicesCount,

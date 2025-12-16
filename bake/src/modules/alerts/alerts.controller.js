@@ -4,11 +4,13 @@ const { success, error } = require('../../core/utils/response');
 
 async function listAlerts(req, res) {
     try {
+        const userId = req.userId || req.user?.id;
+        
         // Get all alerts for devices owned by the user
         const alerts = await prisma.alert.findMany({
             where: {
                 device: {
-                    userId: req.user.id,
+                    userId: userId,
                 },
             },
             include: {
@@ -41,13 +43,14 @@ async function listAlerts(req, res) {
 async function markAsRead(req, res) {
     try {
         const { id } = req.params;
+        const userId = req.userId || req.user?.id;
 
         // Verify alert exists and belongs to user's device
         const alert = await prisma.alert.findFirst({
             where: {
                 id,
                 device: {
-                    userId: req.user.id,
+                    userId: userId,
                 },
             },
         });
@@ -71,11 +74,13 @@ async function markAsRead(req, res) {
 
 async function getUnreadCount(req, res) {
     try {
+        const userId = req.userId || req.user?.id;
+        
         const count = await prisma.alert.count({
             where: {
                 isRead: false,
                 device: {
-                    userId: req.user.id,
+                    userId: userId,
                 },
             },
         });

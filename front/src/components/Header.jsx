@@ -17,10 +17,10 @@ export default function Header() {
   const navLinks = [
     { to: "/", label: "Dashboard", icon: "🏠" },
     { to: "/devices", label: "Devices", icon: "📱" },
-    { to: "/sensors", label: "Sensors", icon: "📊" },
+    // { to: "/sensors", label: "Sensors", icon: "📊" },
     { to: "/alerts", label: "Alerts", icon: "🔔" },
     { to: "/alert-settings", label: "Settings", icon: "⚙️" },
-    { to: "/api-keys", label: "API Keys", icon: "🔑" },
+    // { to: "/api-keys", label: "API Keys", icon: "🔑" },
   ];
 
   return (

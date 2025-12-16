@@ -10,11 +10,14 @@ async function getSettings(req, res) {
 
         console.log('getSettings - deviceId:', deviceIdInt, 'userId:', userId);
 
-        // Verify device exists and belongs to user
+        // Verify device exists and either belongs to user or is a global device (no owner)
         const device = await prisma.device.findFirst({
             where: {
                 id: deviceIdInt,
-                userId: userId,
+                OR: [
+                    { userId: userId },
+                    { userId: null },
+                ],
             },
         });
 
@@ -61,11 +64,14 @@ async function updateSettings(req, res) {
 
         console.log('updateSettings - deviceId:', deviceIdInt, 'userId:', userId);
 
-        // Verify device exists and belongs to user
+        // Verify device exists and either belongs to user or is a global device (no owner)
         const device = await prisma.device.findFirst({
             where: {
                 id: deviceIdInt,
-                userId: userId,
+                OR: [
+                    { userId: userId },
+                    { userId: null },
+                ],
             },
         });
 

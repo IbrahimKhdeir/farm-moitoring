@@ -11,8 +11,8 @@ export function AuthProvider({ children }) {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    const savedUser = Cookies.get("user");
+    const token = Cookies.get("token") || localStorage.getItem("token");
+    const savedUser = Cookies.get("user") || localStorage.getItem("user");
 
     if (!token) {
       setLoading(false);
@@ -42,10 +42,13 @@ export function AuthProvider({ children }) {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            Cookies.set("user", JSON.stringify(data), { expires: 7 });
-            setUser(data);
+          const result = await response.json();
+          const userData = result.data || result;
+          if (userData) {
+            // Save to both Cookies and localStorage for persistence
+            Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+            localStorage.setItem("user", JSON.stringify(userData));
+            setUser(userData);
             setIsAuthenticated(true);
           }
         } else {
@@ -53,6 +56,8 @@ export function AuthProvider({ children }) {
           if (response.status === 401 || response.status === 403) {
             Cookies.remove("token");
             Cookies.remove("user");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
             setIsAuthenticated(false);
             setUser(null);
           }
@@ -87,16 +92,43 @@ export function AuthProvider({ children }) {
 
       const token = result.data.token;
 
-      // Save token in cookies
+      // Save token in cookies AND localStorage
       Cookies.set("token", token, { expires: 7 });
+      localStorage.setItem("token", token);
 
-      // Optional: Save minimal user info
-      const userData = { email }; // you can add more if backend returns it
-      Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+      // Fetch full user profile from /me endpoint
+      try {
+        const meResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (meResponse.ok) {
+          const meResult = await meResponse.json();
+          const userData = meResult.data || meResult;
+          
+          // Save complete user data
+          Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+          localStorage.setItem("user", JSON.stringify(userData));
+          setUser(userData);
+        } else {
+          // Fallback to basic user info
+          const userData = { email };
+          Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+          localStorage.setItem("user", JSON.stringify(userData));
+          setUser(userData);
+        }
+      } catch (meError) {
+        console.error("Error fetching user profile:", meError);
+        const userData = { email };
+        Cookies.set("user", JSON.stringify(userData), { expires: 7 });
+        localStorage.setItem("user", JSON.stringify(userData));
+        setUser(userData);
+      }
 
       setIsAuthenticated(true);
-      setUser(userData);
-
       return true;
     } catch (error) {
       console.error("Login error:", error);
@@ -107,7 +139,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      const token = Cookies.get("token");
+      const token = Cookies.get("token") || localStorage.getItem("token");
       await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         headers: token
@@ -120,9 +152,11 @@ export function AuthProvider({ children }) {
       console.error("Logout error:", error);
     }
 
-    // Delete all cookies
+    // Delete all cookies and localStorage
     Cookies.remove("token");
     Cookies.remove("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
 
     setIsAuthenticated(false);
     setUser(null);
