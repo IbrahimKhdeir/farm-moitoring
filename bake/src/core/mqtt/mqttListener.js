@@ -8,7 +8,7 @@ async function handleMQTTMessage(topic, payload, io) {
   const [_, deviceUuid, __, sensorType] = topic.split('/');
   const value = parseFloat(payload);
 
-  // البحث عن الجهاز والحساس
+  // البحث عن الجهاز والحساس مع معلومات المالك
   const device = await prisma.device.findUnique({
     where: { deviceUuid },
     include: {
@@ -35,9 +35,10 @@ async function handleMQTTMessage(topic, payload, io) {
     }
   });
 
-  // Emit real-time update
-  if (io) {
-    io.emit('sensor-reading', {
+  // Emit real-time update ONLY to the device owner
+  if (io && device.userId) {
+    // Send to user-specific room only
+    io.to(`user:${device.userId}`).emit('sensor-reading', {
       deviceUuid,
       sensorType,
       value,
@@ -99,9 +100,9 @@ async function handleMQTTMessage(topic, payload, io) {
         },
       });
 
-      // Emit real-time alert
-      if (io) {
-        io.emit('new-alert', {
+      // Emit real-time alert ONLY to device owner
+      if (io && device.userId) {
+        io.to(`user:${device.userId}`).emit('new-alert', {
           ...alert,
           device: {
             id: device.id,
