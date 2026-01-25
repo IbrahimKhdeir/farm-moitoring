@@ -48,7 +48,7 @@ export default function Login() {
                 {language === 'ar' ? 'EN' : 'عر'}
               </button>
             </div>
-            <div className="text-4xl sm:text-5xl mb-3">amer</div>
+            <div className="text-4xl sm:text-5xl mb-3">asfjkhdsugfdskjbbv</div>
             <h2 className="text-2xl sm:text-3xl font-bold mb-2">
               {t('loginTitle')}
             </h2>
